@@ -12,10 +12,13 @@ pub fn Bloom(comptime K: type, comptime H: fn (K) u128) type {
             hashes: usize,
 
             fn derive(n: usize, p: f64) !Sizing {
+                if (n == 0 or std.math.isNan(p) or p <= 0 or p >= 1) return error.InvalidConfig;
                 const ln2 = @log(2.0);
                 const nf = @as(f64, @floatFromInt(n));
                 // -nlnp/(ln2)^2
                 const m = -nf * @log(p) / (ln2 * ln2);
+                const max_m: f64 = @as(f64, @floatFromInt(@as(usize, 1) << 63));
+                if (m >= max_m) return error.Overflow;
                 // (m/n)ln2
                 const k = m / nf * ln2;
                 return .{
