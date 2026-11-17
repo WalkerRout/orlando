@@ -69,7 +69,7 @@ pub fn Bloom(comptime K: type, comptime H: fn (K) u128) type {
                 if (self.i >= self.n) {
                     return null;
                 }
-                const hash = (self.hash_a +% self.i *% self.hash_b) % self.m;
+                const hash = (self.hash_a +% self.i *% self.hash_b) & (self.m - 1);
                 self.i += 1;
                 return hash;
             }
